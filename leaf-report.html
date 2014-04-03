@@ -1,0 +1,67 @@
+<polymer-element name="leaf-report"  attributes="">
+  <template>
+    <style>
+     @host { :scope {display: block;} }
+     section {
+       margin-top: .4em;
+       margin-bottom: 1em;
+     }
+    </style>
+    <div>The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}</div>
+    <div>Latest report:</div>
+    <section>
+      <div>plugin_state: <b>{{latestRead.plugin_state}}</b></div>
+      <div>battery_charging_status: <b>{{latestRead.battery_charging_status}}</b></div>
+      <div>battery_capacity: {{latestRead.battery_capacity}}</div>
+      <div>battery_remaining_amount: {{latestRead.battery_remaining_amount}}</div>
+    </section>
+
+    <section>
+      <div>cruising_range_ac_off: <b>{{latestRead.cruising_range_ac_off | meterToMile}}</b></div>
+      <div>cruising_range_ac_on: {{latestRead.cruising_range_ac_on | meterToMile}}</div>
+    </section>
+
+    <section>
+      <div>time_required_to_full_L2_sec: {{latestRead.time_required_to_full_L2_sec | humanizeSec}}</div>
+      <div>time_required_to_full: {{latestRead.time_required_to_full | humanizeSec}}</div>
+    </section>
+
+    <section>
+      <div>operation_date_and_time: <b>{{latestRead.operation_date_and_time | fromNow}}</b></div>
+      <div>notification_date_and_time: {{latestRead.notification_date_and_time | fromNow}}</div>
+      <div>last_battery_status_check_execution_time: {{latestRead.last_battery_status_check_execution_time | fromNow}}</div>
+      <div>data_time: {{latestRead.data_time | fromNow}}</div>
+refresh button here that posts a request
+    </section>
+  </template>
+  <script src="//bigasterisk.com/lib/jquery-2.0.3.js"></script>
+  <script src="//bigasterisk.com/lib/moment.min.js"></script>
+  <script>
+    PolymerExpressions.prototype.meterToMile = function(value) {
+      return Math.round(value * 0.000621371);
+    };
+    PolymerExpressions.prototype.fromNow = function(date) {
+      return moment(date).fromNow();
+    };
+    PolymerExpressions.prototype.humanizeSec = function(sec) {
+      if (sec) {
+        return moment.duration(sec, "seconds").humanize();
+      } else {
+        return sec;
+      }
+    };
+    Polymer('leaf-report', {
+      latestRead: {},
+      created: function() {
+        var self = this;
+        var refresh = function() {
+          $.getJSON('latest', function (d) {
+            self.latestRead = d;
+          });
+        };
+        refresh();
+// listen for leaf-report update signal, rerun refresh
+      },
+    });
+  </script>
+</polymer-element>

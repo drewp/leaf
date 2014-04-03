@@ -1,0 +1,7 @@
+cyclone==1.1
+ipdb==0.8
+iso8601==0.1.10
+pymongo==2.6.3
+python-dateutil==2.2
+rdflib==4.1.1
+
