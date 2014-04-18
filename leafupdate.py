@@ -1,5 +1,6 @@
 #!bin/python
-import sys, datetime, json, logging, time
+from __future__ import division
+import sys, datetime, json, logging, time, math
 sys.path.append('pycarwings-master')
 from connection import Connection
 from userservice import UserService
@@ -17,26 +18,29 @@ logging.basicConfig(level=logging.INFO)
 config = Graph()
 config.parse('priv.n3', format='n3')
 
+def nowLocal():
+    return datetime.datetime.now(tzlocal())
+    
 class Poller(object):
     def __init__(self, config, car, mongoColl):
         self.config, self.car = config, car
         self.mongoColl = mongoColl
     
     def readCarStatus(self):
+        log.info("readCarStatus starts")
         c = Connection(self.config.value(self.car, NS['username']),
                        self.config.value(self.car, NS['password']))
-        u = UserService(c)
-        d = u.login_and_get_status()
+        userService = UserService(c)
+        status = userService.login_and_get_status()
         if not c.logged_in:
             raise ValueError('login failed')
 
         result = {}
 
-        result['vin'] = d.user_info.vin
-        result['nickname'] = d.user_info.nickname
+        result['vin'] = status.user_info.vin
+        result['nickname'] = status.user_info.nickname
         v = VehicleService(c)
-        request_time = (datetime.datetime.now(tzlocal()) -
-                        datetime.timedelta(seconds=2))
+        requestTime = nowLocal() - datetime.timedelta(seconds=2)
         v.request_status(result['vin'])
         tries = 0
         while True:
@@ -44,12 +48,12 @@ class Poller(object):
             if tries > 60:
                 log.info("giving up on this request")
                 return
-            self.updateWithLatestData(result, u, result['vin'])
+            self.updateWithLatestData(result, userService, result['vin'])
             log.info("try %s. request time was %s, "
                      "latest status operation time is %s",
-                     tries, request_time,
+                     tries, requestTime,
                      result['operation_date_and_time'].astimezone(tzlocal()))
-            if result['operation_date_and_time'] > request_time:
+            if result['operation_date_and_time'] > requestTime:
                 break
             time.sleep(10)
 
@@ -62,11 +66,15 @@ class Poller(object):
         result['notification_date_and_time'] = status.notification_date_and_time
         result.update(status.__dict__)
         # cruising range is in meters
-        result['data_time'] = datetime.datetime.now(tzlocal())
+        result['data_time'] = nowLocal()
         for attr in ['time_required_to_full_L2', 'time_required_to_full']:
             if result[attr] is not None:
-                result[attr] = result[attr].total_seconds()
-        
+                result[attr + '_sec'] = result[attr].total_seconds()
+                del result[attr]
+
+def toLocal(dt):
+    return dt.replace(tzinfo=tzutc()).astimezone(tzlocal())
+                
 class Latest(cyclone.web.RequestHandler):
     def get(self, *args):
         doc = self.settings.coll.find_one(sort=[('data_time', -1)])
@@ -75,26 +83,61 @@ class Latest(cyclone.web.RequestHandler):
                          "last_battery_status_check_execution_time",
                          "operation_date_and_time",
                          "notification_date_and_time"]:
-            doc[timeAttr] = (doc[timeAttr]
-                             .replace(tzinfo=tzutc())
-                             .astimezone(tzlocal()).isoformat())
+            doc[timeAttr] = toLocal(doc[timeAttr]).isoformat()
         json.dump(doc, self)
 
 coll = pymongo.Connection('bang', 27017)['leaf']['readings']
 poller = Poller(config, NS['car'], coll)
 
+def lastPollTime(coll):
+    doc = coll.find_one(sort=[('data_time', -1)])
+    return toLocal(doc['operation_date_and_time'])
+
+dailyStartHour = 8
+dailyEndHour = 21 # this should be adjusted if we're charging late
+periodHours = 1. / 3
+def nextAfter(dt):
+    dayStart = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+    offsetHours = (dt - dayStart).total_seconds() / 3600
+    
+    if offsetHours < dailyStartHour:
+        return dayStart + datetime.timedelta(hours=dailyStartHour)
+    if offsetHours > dailyEndHour:
+        return dayStart + datetime.timedelta(days=1, hours=dailyStartHour)
+    return dayStart + datetime.timedelta(
+        hours=math.ceil(offsetHours / periodHours) * periodHours)
+    
+def nextPollTime(coll, now):
+    lastTime = lastPollTime(coll)
+
+    if nextAfter(lastTime) < now:
+        return now
+
+    return nextAfter(now)
+
 def loop():
-    # make this skip runs during the night, slow down requests when car isn't charging, speed up requests when drewphone has just been in the car.
-    # also record if a req is going, and don't run a timed one during a manual one.
-    return threads.deferToThread(poller.readCarStatus)
-#task.LoopingCall(loop).start(20*60, now=False)
+    def waitThenLoop(*args):
+        reactor.callLater(30, loop)
+    # also record if a req is going, and don't run a timed one during
+    # a manual one.
+    now = nowLocal()
+    nextTime = nextPollTime(coll, now)
+    log.info("waiting until %s" % nextTime)
+
+    def go():
+        d = threads.deferToThread(poller.readCarStatus)
+        d.addCallbacks(waitThenLoop, waitThenLoop)
+    reactor.callLater((nextTime - now).total_seconds(), go)
+    
+loop()
+
 
 twlog.startLogging(sys.stderr)
 
 if __name__ == '__main__':
     SFH = cyclone.web.StaticFileHandler
     reactor.listenTCP(9058, cyclone.web.Application(handlers=[
-        (r'/(|leaf-report\.html|leaf-report\.js|leaf-meter\.js|bower_components/.*)', SFH,
+        (r'/(|leaf-report\.html|leaf-report\.js|leaf-meter\.js|mockup\.svg|bower_components/.*)', SFH,
          {"path": ".", "default_filename": "index.html"}),
         (r'/(leaf/)?latest', Latest),
         ], coll=coll, poller=poller, debug=True))
