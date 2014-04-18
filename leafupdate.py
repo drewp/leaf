@@ -84,6 +84,8 @@ coll = pymongo.Connection('bang', 27017)['leaf']['readings']
 poller = Poller(config, NS['car'], coll)
 
 def loop():
+    # make this skip runs during the night, slow down requests when car isn't charging, speed up requests when drewphone has just been in the car.
+    # also record if a req is going, and don't run a timed one during a manual one.
     return threads.deferToThread(poller.readCarStatus)
 task.LoopingCall(loop).start(20*60)
 
