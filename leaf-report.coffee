@@ -18,6 +18,12 @@ Polymer "leaf-report",
     refresh = ->
       $.getJSON "/leaf/latest", (d) ->
         self.latestRead = d
+
+        meter = self.$.meter
+        for k, v of d
+          meter[k] = v
+
+        meter.refresh() # should be an observer
         return
 
       return

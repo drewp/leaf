@@ -1,27 +1,28 @@
 Polymer "leaf-meter", {
   ready: () ->
-    @cap = parseInt(@attributes.battery_capacity.value)
-    @remain = parseInt(@attributes.battery_remaining_amount.value)
+    @cap = parseInt(@battery_capacity)
+    @remain = parseInt(@battery_remaining_amount)
     console.log("attr", @battery_capacity)
-    console.log("a2", @attributes.battery_capacity.value)
+    @refresh() #??
   observe: {
     battery_capacity: 'refresh',
+    battery_remaining_amount: 'refresh'
   },
   refresh: () ->
     @steps = [@cap .. 1]
-    if @attributes.plugin_state.value == 'NOT_CONNECTED'
+    if @plugin_state == 'NOT_CONNECTED'
       @desc = "not connected"
     else
-      if @attributes.battery_charging_status.value == 'NOT_CHARGING'
+      if @battery_charging_status == 'NOT_CHARGING'
         @desc = "plugged but not charging"
       else
         @desc = "charging at "
-        if @attributes.time_required_to_full_L2_sec
+        if @time_required_to_full_L2_sec
           @desc += "L2"
-        else if @attributes.time_required_to_full
+        else if @time_required_to_full_sec
           @desc += "slow plug"
         else
           @desc += "(unknown mode)"
-    @estimate = "Est " + @attributes.cruising_range_ac_off.value + " mi"
+    @estimate = "Est " + Math.round(@cruising_range_ac_off / 1609.34) + " mi"
 }
 
