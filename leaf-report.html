@@ -1,67 +1,62 @@
-<polymer-element name="leaf-report"  attributes="">
-  <template>
-    <style>
-     @host { :scope {display: block;} }
-     section {
-       margin-top: .4em;
-       margin-bottom: 1em;
+<polymer-element name="leaf-meter"><style>.steps > div {
+  width: 1em;
+  height: 1em;
+  background: white;
+  border: 1px solid black;
+}
+.steps > div.full {
+  background: purple;
+}
+leaf-meter h1 {
+  margin: 0;
+  font-size: 100%;
+}
+leaf-meter > div {
+  border: 1px solid black;
+  display: inline-flex;
+  flex-direction: column;
+}</style><template><div><div style="flex: 0 0 auto"><h1>Battery level</h1></div><div style="flex: 1 0; display: flex;"><div style="flex: 0 0 auto" class="steps"><template repeat="{{i in steps}}"><div class="{{i &lt;= remain ? 'full' : 'empty'}}"> </div></template></div><div style="flex: 0 0 auto"><div>{{desc}}</div><div>{{estimate}}</div></div></div></div></template><script src="leaf-meter.js?v1"></script></polymer-element><polymer-element name="leaf-polling"><style>leaf-polling #timeline {
+  height: 20px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  position: relative;
+  margin-bottom: 3em;
+}
+leaf-polling .tick {
+  position: absolute;
+  border-left: 1px solid black;
+  height: 100%;
+}
+leaf-polling .label {
+  position: relative;
+  top: 20px;
+  width: 1px;
+}</style><template><div style="border: 1px solid black"><div>Next sample in {{nextMin}} min</div><div id="timeline"><template repeat="{{ev in events}}"><div style="{{ev.style}}" class="tick"><div class="label">{{ev.label}}</div></div></template></div></div></template><script>Polymer("leaf-polling", {
+  ready: function () {
+    var self = this;
+    var attr = this.attributes;
+    var t1 = parseFloat(attr.draw_from.value);
+    var t2 = parseFloat(attr.draw_to.value);
+    var width = 600;
+    function xForTime(t) {
+      var frac = (t -  t1) / (t2 - t1);
+      return width * frac;
      }
-    </style>
-    <div>The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}</div>
-    <div>Latest report:</div>
-    <section>
-      <div>plugin_state: <b>{{latestRead.plugin_state}}</b></div>
-      <div>battery_charging_status: <b>{{latestRead.battery_charging_status}}</b></div>
-      <div>battery_capacity: {{latestRead.battery_capacity}}</div>
-      <div>battery_remaining_amount: {{latestRead.battery_remaining_amount}}</div>
-    </section>
-
-    <section>
-      <div>cruising_range_ac_off: <b>{{latestRead.cruising_range_ac_off | meterToMile}}</b></div>
-      <div>cruising_range_ac_on: {{latestRead.cruising_range_ac_on | meterToMile}}</div>
-    </section>
-
-    <section>
-      <div>time_required_to_full_L2: {{latestRead.time_required_to_full_L2 | humanizeSec}}</div>
-      <div>time_required_to_full: {{latestRead.time_required_to_full | humanizeSec}}</div>
-    </section>
-
-    <section>
-      <div>operation_date_and_time: <b>{{latestRead.operation_date_and_time | fromNow}}</b></div>
-      <div>notification_date_and_time: {{latestRead.notification_date_and_time | fromNow}}</div>
-      <div>last_battery_status_check_execution_time: {{latestRead.last_battery_status_check_execution_time | fromNow}}</div>
-      <div>data_time: {{latestRead.data_time | fromNow}}</div>
-refresh button here that posts a request
-    </section>
-  </template>
-  <script src="//bigasterisk.com/lib/jquery-2.0.3.js"></script>
-  <script src="//bigasterisk.com/lib/moment.min.js"></script>
-  <script>
-    PolymerExpressions.prototype.meterToMile = function(value) {
-      return Math.round(value * 0.000621371);
-    };
-    PolymerExpressions.prototype.fromNow = function(date) {
-      return moment(date).fromNow();
-    };
-    PolymerExpressions.prototype.humanizeSec = function(sec) {
-      if (sec) {
-        return moment.duration(sec, "seconds").humanize();
-      } else {
-        return sec;
-      }
-    };
-    Polymer('leaf-report', {
-      latestRead: {},
-      created: function() {
-        var self = this;
-        var refresh = function() {
-          $.getJSON('latest', function (d) {
-            self.latestRead = d;
-          });
-        };
-        refresh();
-// listen for leaf-report update signal, rerun refresh
-      },
+    self.nextMin = Math.floor((parseFloat(attr.next_sample.value) - parseFloat(attr.now.value)) / 6) / 10;
+    self.events = [];
+    JSON.parse(attr.recent.value).forEach(function (row) {
+      var t = row[0], label = row[1];
+      var hhmm = new Date(t * 1000).toTimeString().replace(/(\d+:\d+):.*/, "$1");
+      self.events.push({style: 'left: '+xForTime(t)+'px', label: hhmm + ' ' + label});
     });
-  </script>
-</polymer-element>
+    self.events.push({style: 'left: ' + xForTime(parseFloat(attr.now.value))+'px; border-color: red', label: 'now'});
+  }
+})
+</script></polymer-element><polymer-element name="leaf-predict"><template>predict</template><script>Polymer("leaf-predict", {})
+
+
+</script></polymer-element><polymer-element name="leaf-report"><template><style>@host { :scope {display: block;} }
+section {
+  margin-top: .4em;
+  margin-bottom: 1em;
+}</style><div><leaf-meter battery_capacity="12" battery_remaining_amount="7" battery_charging_status="NOT_CHARGING" plugin_state="NOT_CONNECTED" cruising_range_ac_off="58" time_required_to_full_L2_sec="" time_required_to_full="9 hours"></leaf-meter></div><div><leaf-polling draw_from="1234567000" draw_to="1234570000" next_sample="1234570000" recent="[ [&quot;1234567480&quot;,&quot;ok&quot;],[&quot;1234567880&quot;,&quot;failed&quot;] ]" now="1234568000"></leaf-polling></div><div><leaf-predict></leaf-predict></div><div>The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}</div><div>Latest report:</div><section><div>plugin_state:<b>{{latestRead.plugin_state}}</b></div><div>battery_charging_status:<b>{{latestRead.battery_charging_status}}</b></div><div>battery_capacity: {{latestRead.battery_capacity}}</div><div>battery_remaining_amount: {{latestRead.battery_remaining_amount}}</div></section><section><div>cruising_range_ac_off:<b>{{latestRead.cruising_range_ac_off | meterToMile}}</b></div><div>cruising_range_ac_on: {{latestRead.cruising_range_ac_on | meterToMile}}</div></section><section><div>time_required_to_full_L2_sec: {{latestRead.time_required_to_full_L2_sec | humanizeSec}}</div><div>time_required_to_full: {{latestRead.time_required_to_full | humanizeSec}}</div></section><section><div>operation_date_and_time:<b>{{latestRead.operation_date_and_time | fromNow}}</b></div><div>notification_date_and_time: {{latestRead.notification_date_and_time | fromNow}}</div><div>last_battery_status_check_execution_time: {{latestRead.last_battery_status_check_execution_time | fromNow}}</div><div>data_time: {{latestRead.data_time | fromNow}}</div>refresh button here that posts a request</section></template><script src="//bigasterisk.com/lib/jquery-2.0.3.js"></script><script src="//bigasterisk.com/lib/moment.min.js"></script><script src="leaf-report.js"></script></polymer-element>

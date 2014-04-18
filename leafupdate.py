@@ -68,7 +68,7 @@ class Poller(object):
                 result[attr] = result[attr].total_seconds()
         
 class Latest(cyclone.web.RequestHandler):
-    def get(self):
+    def get(self, *args):
         doc = self.settings.coll.find_one(sort=[('data_time', -1)])
         del doc['_id'] # no uri yet :(
         for timeAttr in ["data_time",
@@ -87,15 +87,15 @@ def loop():
     # make this skip runs during the night, slow down requests when car isn't charging, speed up requests when drewphone has just been in the car.
     # also record if a req is going, and don't run a timed one during a manual one.
     return threads.deferToThread(poller.readCarStatus)
-task.LoopingCall(loop).start(20*60)
+#task.LoopingCall(loop).start(20*60, now=False)
 
 twlog.startLogging(sys.stderr)
 
 if __name__ == '__main__':
     SFH = cyclone.web.StaticFileHandler
     reactor.listenTCP(9058, cyclone.web.Application(handlers=[
-        (r'/(|leaf-report\.html|bower_components/.*)', SFH,
+        (r'/(|leaf-report\.html|leaf-report\.js|leaf-meter\.js|bower_components/.*)', SFH,
          {"path": ".", "default_filename": "index.html"}),
-        (r'/latest', Latest),
+        (r'/(leaf/)?latest', Latest),
         ], coll=coll, poller=poller, debug=True))
     reactor.run()
