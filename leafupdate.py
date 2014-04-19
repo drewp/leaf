@@ -71,13 +71,14 @@ class Poller(object):
             if result[attr] is not None:
                 result[attr + '_sec'] = result[attr].total_seconds()
                 del result[attr]
+        # also fix stringified numbers
 
 def toLocal(dt):
     return dt.replace(tzinfo=tzutc()).astimezone(tzlocal())
                 
 class Latest(cyclone.web.RequestHandler):
     def get(self, *args):
-        docs = self.settings.coll.find(sort=[('data_time', -1)], limit=10)
+        docs = self.settings.coll.find(sort=[('data_time', -1)], limit=40)
         doc = docs[0]
         del doc['_id'] # no uri yet :(
         for timeAttr in ["data_time",
@@ -89,6 +90,7 @@ class Latest(cyclone.web.RequestHandler):
         doc['previous'] = [[d['operation_date_and_time'].isoformat(),
                             d['battery_remaining_amount']]
                            for d in docs]
+        doc['previous'].sort()
         json.dump(doc, self)
 
 coll = pymongo.Connection('bang', 27017)['leaf']['readings']
