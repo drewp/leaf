@@ -62,14 +62,14 @@ polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample r
       
   script(src="leaf-polling.js")
 
-polymer-element(name='leaf-predict')
-  link(rel="stylesheet", href="//bigasterisk.com/lib/rickshaw/71877d994a/src/css/graph.css")
+polymer-element(name='leaf-predict', attributes='previous')
+  link(rel="stylesheet", href="/lib/rickshaw/71877d994a/src/css/graph.css")
   template
     | predict2
     #chart
     #slider
-  script(src="//bigasterisk.com/lib/rickshaw/71877d994a/vendor/d3.v3.js")
-  script(src="//bigasterisk.com/lib/rickshaw/71877d994a/rickshaw.min.js")
+  script(src="/lib/rickshaw/71877d994a/vendor/d3.v3.js")
+  script(src="/lib/rickshaw/71877d994a/rickshaw.min.js")
   script(src="leaf-predict.js?v3")
     
 polymer-element(name='leaf-report')
@@ -98,9 +98,7 @@ polymer-element(name='leaf-report')
             recent="[ [\"1234567480\",\"ok\"],[\"1234567880\",\"failed\"] ]",
             now=        "1234568000")
     div
-      leaf-predict()
-    div
-      | Previous: {{latestRead.previous | json}}
+      leaf-predict(previous="{{latestRead.previous}}")
     div
       | The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}
     div Latest report:
@@ -131,8 +129,8 @@ polymer-element(name='leaf-report')
         | last_battery_status_check_execution_time: {{latestRead.last_battery_status_check_execution_time | fromNow}}
       div data_time: {{latestRead.data_time | fromNow}}
       | refresh button here that posts a request
-  script(src='//bigasterisk.com/lib/jquery-2.0.3.js')
-  script(src='//bigasterisk.com/lib/moment.min.js')
+  script(src='/lib/jquery-2.0.3.js')
+  script(src='/lib/moment.min.js')
   script(src='leaf-report.js')
 
   // listen for leaf-report update signal, rerun refresh
