@@ -77,13 +77,18 @@ def toLocal(dt):
                 
 class Latest(cyclone.web.RequestHandler):
     def get(self, *args):
-        doc = self.settings.coll.find_one(sort=[('data_time', -1)])
+        docs = self.settings.coll.find(sort=[('data_time', -1)], limit=10)
+        doc = docs[0]
         del doc['_id'] # no uri yet :(
         for timeAttr in ["data_time",
                          "last_battery_status_check_execution_time",
                          "operation_date_and_time",
                          "notification_date_and_time"]:
             doc[timeAttr] = toLocal(doc[timeAttr]).isoformat()
+
+        doc['previous'] = [[d['operation_date_and_time'].isoformat(),
+                            d['battery_remaining_amount']]
+                           for d in docs]
         json.dump(doc, self)
 
 coll = pymongo.Connection('bang', 27017)['leaf']['readings']
@@ -137,7 +142,7 @@ twlog.startLogging(sys.stderr)
 if __name__ == '__main__':
     SFH = cyclone.web.StaticFileHandler
     reactor.listenTCP(9058, cyclone.web.Application(handlers=[
-        (r'/(|leaf-report\.html|leaf-report\.js|leaf-meter\.js|mockup\.svg|bower_components/.*)', SFH,
+        (r'/(|leaf-.*?\.(?:html|js)|mockup\.svg|bower_components/.*)', SFH,
          {"path": ".", "default_filename": "index.html"}),
         (r'/(leaf/)?latest', Latest),
         ], coll=coll, poller=poller, debug=True))

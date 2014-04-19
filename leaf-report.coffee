@@ -1,3 +1,4 @@
+PolymerExpressions::json = JSON.stringify
 PolymerExpressions::meterToMile = (value) ->
   Math.round value * 0.000621371
 
@@ -30,4 +31,3 @@ Polymer "leaf-report",
 
     refresh()
 
-# listen for leaf-report update signal, rerun refresh

@@ -31,8 +31,7 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
             | {{desc}}
           div
             | {{estimate}}
-    
-  script(src='leaf-meter.js?v10')
+  script(src="leaf-meter.js")  
 
 polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample recent now")
   style.
@@ -61,35 +60,17 @@ polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample r
           div.tick(style="{{ev.style}}")
             div.label {{ev.label}}
       
-  script.
-    Polymer("leaf-polling", {
-      ready: function () {
-        var self = this;
-        var t1 = parseFloat(@draw_from);
-        var t2 = parseFloat(@draw_to);
-        var width = 600;
-        function xForTime(t) {
-          var frac = (t -  t1) / (t2 - t1);
-          return width * frac;
-        }
-        self.nextMin = Math.floor((parseFloat(@next_sample) - parseFloat(@now)) / 6) / 10;
-        self.events = [];
-        JSON.parse(@recent).forEach(function (row) {
-          var t = row[0], label = row[1];
-          var hhmm = new Date(t * 1000).toTimeString().replace(/(\d+:\d+):.*/, "$1");
-          self.events.push({style: 'left: '+xForTime(t)+'px', label: hhmm + ' ' + label});
-        });
-        self.events.push({style: 'left: ' + xForTime(parseFloat(@now))+'px; border-color: red', label: 'now'});
-      }
-    })
+  script(src="leaf-polling.js")
 
 polymer-element(name='leaf-predict')
+  link(rel="stylesheet", href="//bigasterisk.com/lib/rickshaw/71877d994a/src/css/graph.css")
   template
-    | predict
-  script.
-    Polymer("leaf-predict", {})
-
-
+    | predict2
+    #chart
+    #slider
+  script(src="//bigasterisk.com/lib/rickshaw/71877d994a/vendor/d3.v3.js")
+  script(src="//bigasterisk.com/lib/rickshaw/71877d994a/rickshaw.min.js")
+  script(src="leaf-predict.js?v3")
     
 polymer-element(name='leaf-report')
   template
@@ -118,6 +99,8 @@ polymer-element(name='leaf-report')
             now=        "1234568000")
     div
       leaf-predict()
+    div
+      | Previous: {{latestRead.previous | json}}
     div
       | The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}
     div Latest report:
@@ -150,4 +133,6 @@ polymer-element(name='leaf-report')
       | refresh button here that posts a request
   script(src='//bigasterisk.com/lib/jquery-2.0.3.js')
   script(src='//bigasterisk.com/lib/moment.min.js')
-  script(src="leaf-report.js?v9")
+  script(src='leaf-report.js')
+
+  // listen for leaf-report update signal, rerun refresh

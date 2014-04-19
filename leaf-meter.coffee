@@ -25,4 +25,3 @@ Polymer "leaf-meter", {
           @desc += "(unknown mode)"
     @estimate = "Est " + Math.round(@cruising_range_ac_off / 1609.34) + " mi"
 }
-
