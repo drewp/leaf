@@ -87,10 +87,11 @@ class Latest(cyclone.web.RequestHandler):
                          "notification_date_and_time"]:
             doc[timeAttr] = toLocal(doc[timeAttr]).isoformat()
 
-        doc['previous'] = [[d['operation_date_and_time'].isoformat(),
+        doc['previous'] = [[toLocal(d['operation_date_and_time']).isoformat(),
                             d['battery_remaining_amount']]
                            for d in docs]
         doc['previous'].sort()
+        doc['nextPollTime'] = nextPollTime(coll, nowLocal()).isoformat()
         json.dump(doc, self)
 
 coll = pymongo.Connection('bang', 27017)['leaf']['readings']
@@ -98,6 +99,8 @@ poller = Poller(config, NS['car'], coll)
 
 def lastPollTime(coll):
     doc = coll.find_one(sort=[('data_time', -1)])
+    if not doc:
+        return datetime.datetime(1900, 1, 1, tzinfo=tzlocal())
     return toLocal(doc['operation_date_and_time'])
 
 dailyStartHour = 8
