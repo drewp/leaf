@@ -21,7 +21,7 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
   template
     div
       div(style="flex: 0 0 auto")
-        h1 Battery level
+        h1 Last reading
       div(style="flex: 1 0; display: flex;")
         div.steps(style="flex: 0 0 auto")
           template(repeat="{{i in steps}}")
@@ -33,10 +33,11 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
             | {{estimate}}
   script(src="leaf-meter.js")  
 
-polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample recent now")
+polymer-element(name='leaf-polling', attributes="next_sample recent now_milli")
   style.
     leaf-polling #timeline {
       height: 20px;
+      width: 600px;
       border-top: 1px solid black;
       border-bottom: 1px solid black;
       position: relative;
@@ -51,6 +52,7 @@ polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample r
       position: relative;
       top: 20px;
       width: 1px;
+      font-size: 8px;
     }
   template
     div(style="border: 1px solid black")
@@ -65,7 +67,7 @@ polymer-element(name='leaf-polling', attributes="draw_from draw_to next_sample r
 polymer-element(name='leaf-predict', attributes='previous')
   link(rel="stylesheet", href="/lib/rickshaw/71877d994a/src/css/graph.css")
   template
-    | predict2
+    | Battery level
     #chart
     #slider
   script(src="/lib/rickshaw/71877d994a/vendor/d3.v3.js")
@@ -80,6 +82,9 @@ polymer-element(name='leaf-report')
         margin-top: .4em;
         margin-bottom: 1em;
         outline: 1px solid gray;
+        display: inline-block;
+        overflow: hidden;
+        margin: 5px;
       }
     section
       leaf-meter#meter(battery_capacity="12",
@@ -91,14 +96,12 @@ polymer-element(name='leaf-report')
                   time_required_to_full_sec="9 hours",
                  )
     section
-      leaf-polling(
-            draw_from=  "1234567000",
-            draw_to=    "1234570000",
-            next_sample="1234570000",
-            recent="[ [\"1234567480\",\"ok\"],[\"1234567880\",\"failed\"] ]",
-            now=        "1234568000")
-    div
       leaf-predict(previous="{{latestRead.previous}}")
+    section
+      leaf-polling#polling(
+            next_sample="{{latestRead.nextPollTime}}",
+            recent="{{latestRead.previous}}",
+            now_milli="1397949838708")
     div
       | The latest report was fetched {{latestRead.data_time}}, {{latestRead.data_time | fromNow}}
     div Latest report:

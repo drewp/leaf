@@ -13,7 +13,7 @@ PolymerExpressions::humanizeSec = (sec) ->
 
 Polymer "leaf-report",
   latestRead: {}
-  created: ->
+  ready: ->
     console.log("lrc")
     self = this
     refresh = ->
@@ -30,4 +30,8 @@ Polymer "leaf-report",
       return
 
     refresh()
+    updateTime = () ->
+      self.$.polling.now_milli = +new Date()
+    setInterval(updateTime, 30 * 1000)
+    setInterval(refresh, 1000 * 60 * 10)
 
