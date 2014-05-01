@@ -94,6 +94,16 @@ class Latest(cyclone.web.RequestHandler):
         doc['nextPollTime'] = nextPollTime(coll, nowLocal()).isoformat()
         json.dump(doc, self)
 
+
+class LastUpdateCheck(cyclone.web.RequestHandler):
+    def get(self, *args):
+        latestDoc = self.settings.coll.find_one(sort=[('data_time', -1)])
+        maxMinutesOld = 60
+        if not latestDoc or (nowLocal() - toLocal(latestDoc['data_time'])).total_seconds() > (maxMinutesOld * 60):
+            raise ValueError("latest check is too old")
+        self.write('ok')
+        
+
 coll = pymongo.Connection('bang', 27017)['leaf']['readings']
 poller = Poller(config, NS['car'], coll)
 
@@ -150,5 +160,6 @@ if __name__ == '__main__':
         (r'/(|leaf-.*?\.(?:html|js)|mockup\.svg|bower_components/.*)', SFH,
          {"path": ".", "default_filename": "index.html"}),
         (r'/(leaf/)?latest', Latest),
+        (r'/lastUpdateCheck', LastUpdateCheck),
         ], coll=coll, poller=poller, debug=True))
     reactor.run()
