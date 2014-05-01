@@ -78,7 +78,7 @@ def toLocal(dt):
                 
 class Latest(cyclone.web.RequestHandler):
     def get(self, *args):
-        docs = self.settings.coll.find(sort=[('data_time', -1)], limit=40)
+        docs = self.settings.coll.find(sort=[('data_time', -1)], limit=180)
         doc = docs[0]
         del doc['_id'] # no uri yet :(
         for timeAttr in ["data_time",
