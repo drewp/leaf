@@ -1,4 +1,4 @@
-all: leaf-report.html leaf-report.js leaf-meter.js leaf-polling.js leaf-predict.js
+all: leaf-report.html leaf-report.js leaf-meter.js leaf-polling.js leaf-predict.js filters.js
 
 %.html: %.jade
 	/usr/lib/node_modules/nodefront/node_modules/jade/bin/jade.js < $< > $@ || rm $@

@@ -28,10 +28,11 @@ Polymer "leaf-polling", {
       t = new Date(row[0])
       label = "ok" # row[1]
       hhmm = t.toTimeString().replace(/(\d+:\d+):.*/, "$1")
-      @events.push
-        style: "left: " + xForTime(+t) + "px"
-        label: hhmm + " " + label
-      return
+      x = xForTime(+t)
+      if x > 0
+        @events.push
+          style: "left: " + x + "px"
+          label: hhmm + "\n" + label
 
     @events.push
       style: "left: " + xForTime(parseFloat(@now_milli)) + "px; border-color: red"

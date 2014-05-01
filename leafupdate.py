@@ -147,7 +147,7 @@ twlog.startLogging(sys.stderr)
 if __name__ == '__main__':
     SFH = cyclone.web.StaticFileHandler
     reactor.listenTCP(9058, cyclone.web.Application(handlers=[
-        (r'/(|leaf-.*?\.(?:html|js)|mockup\.svg|bower_components/.*)', SFH,
+        (r'/(|leaf-.*?\.(?:html|js)|filters\.js|mockup\.svg|bower_components/.*)', SFH,
          {"path": ".", "default_filename": "index.html"}),
         (r'/(leaf/)?latest', Latest),
         ], coll=coll, poller=poller, debug=True))

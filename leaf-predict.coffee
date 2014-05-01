@@ -40,7 +40,6 @@ Polymer "leaf-predict", {
   previousChanged: () ->
     pts = @previous
     seriesData = ({x: +new Date(row[0]), y: parseFloat(row[1])} for row in pts)
-    console.log(seriesData[seriesData.length-1])
     @graph.series[0].data = seriesData
     @graph.render()
 }
