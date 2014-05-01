@@ -4,6 +4,8 @@ Polymer "leaf-predict", {
       element: @$.chart
       width: 900
       height: 200
+      min: 0
+      max: 12
       stroke: true
       strokeWidth: 3
       renderer: "line"
@@ -18,6 +20,7 @@ Polymer "leaf-predict", {
         }
       ]
     )
+    @graph.window.xMin = +new Date() - 86400 * 1 * 1000
     @graph.render()
 
     xAxis = new Rickshaw.Graph.Axis.X(
