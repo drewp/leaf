@@ -72,7 +72,7 @@ polymer-element(name='leaf-predict', attributes='previous')
     #slider
   script(src="/lib/rickshaw/71877d994a/vendor/d3.v3.js")
   script(src="/lib/rickshaw/71877d994a/rickshaw.min.js")
-  script(src="leaf-predict.js?v3")
+  script(src="leaf-predict.js")
     
 polymer-element(name='leaf-report')
   template
@@ -87,14 +87,15 @@ polymer-element(name='leaf-report')
         margin: 5px;
       }
     section
-      leaf-meter#meter(battery_capacity="12",
-                  battery_remaining_amount="7",
-                  battery_charging_status="NOT_CHARGING",
-                  plugin_state="NOT_CONNECTED",
-                  cruising_range_ac_off="58",
-                  time_required_to_full_L2_sec="",
-                  time_required_to_full_sec="9 hours",
-                 )
+      leaf-meter(
+        battery_capacity="{{latestRead.battery_capacity}}",
+        battery_remaining_amount="{{latestRead.battery_remaining_amount}}",
+        battery_charging_status="{{latestRead.battery_charging_status}}",
+        plugin_state="{{latestRead.plugin_state}}",
+        cruising_range_ac_off="{{latestRead.cruising_range_ac_off}}",
+        time_required_to_full_L2_sec="{{latestRead.time_required_to_full_L2_sec}}",
+        time_required_to_full_sec="{{latestRead.time_required_to_full_sec}}",
+      )
     section
       leaf-predict(previous="{{latestRead.previous}}")
     section

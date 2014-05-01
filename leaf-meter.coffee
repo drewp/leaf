@@ -1,14 +1,11 @@
 Polymer "leaf-meter", {
-  ready: () ->
-    @cap = parseInt(@battery_capacity)
-    @remain = parseInt(@battery_remaining_amount)
-    console.log("attr", @battery_capacity)
-    @refresh() #??
   observe: {
     battery_capacity: 'refresh',
     battery_remaining_amount: 'refresh'
   },
   refresh: () ->
+    @cap = parseInt(@battery_capacity)
+    @remain = parseInt(@battery_remaining_amount)
     @steps = [@cap .. 1]
     if @plugin_state == 'NOT_CONNECTED'
       @desc = "not connected"
