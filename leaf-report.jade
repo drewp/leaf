@@ -1,24 +1,24 @@
 polymer-element(name='leaf-meter', attributes="battery_capacity battery_remaining_amount battery_charging_status plugin_state cruising_range_ac_off time_required_to_full_L2_sec time_required_to_full_sec")
-  style.
-    .steps > div {
-      width: 1em;
-      height: 1em;
-      background: white;
-      border: 1px solid black;
-    }
-    .steps > div.full {
-      background: purple;
-    }
-    leaf-meter h1 {
-      margin: 0;
-      font-size: 100%;
-    }
-    leaf-meter > div {
-      border: 1px solid black;
-      display: inline-flex;
-      flex-direction: column;
-    }
   template
+    style.
+      .steps > div {
+        width: 1em;
+        height: 1em;
+        background: white;
+        border: 1px solid black;
+      }
+      .steps > div.full {
+        background: purple;
+      }
+      h1 {
+        margin: 0;
+        font-size: 100%;
+      }
+      :host > div {
+        border: 1px solid black;
+        display: inline-flex;
+        flex-direction: column;
+      }
     div
       div(style="flex: 0 0 auto")
         h1 Last reading
@@ -34,27 +34,27 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
   script(src="leaf-meter.js")  
 
 polymer-element(name='leaf-polling', attributes="next_sample recent now_milli")
-  style.
-    leaf-polling #timeline {
-      height: 20px;
-      width: 600px;
-      border-top: 1px solid black;
-      border-bottom: 1px solid black;
-      position: relative;
-      margin-bottom: 3em;
-    }
-    leaf-polling .tick {
-      position: absolute;
-      border-left: 1px solid black;
-      height: 100%;
-    }
-    leaf-polling .label {
-      position: relative;
-      top: 20px;
-      width: 1px;
-      font-size: 8px;
-    }
   template
+    style.
+      #timeline {
+        height: 20px;
+        width: 600px;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        position: relative;
+        margin-bottom: 3em;
+      }
+      .tick {
+        position: absolute;
+        border-left: 1px solid black;
+        height: 100%;
+      }
+      .label {
+        position: relative;
+        top: 20px;
+        width: 1px;
+        font-size: 8px;
+      }
     div(style="border: 1px solid black")
       div Next sample in {{nextMin}} min
       div#timeline
@@ -65,8 +65,8 @@ polymer-element(name='leaf-polling', attributes="next_sample recent now_milli")
   script(src="leaf-polling.js")
 
 polymer-element(name='leaf-predict', attributes='previous')
-  link(rel="stylesheet", href="/lib/rickshaw/71877d994a/src/css/graph.css")
   template
+    link(rel="stylesheet", href="/lib/rickshaw/71877d994a/src/css/graph.css")
     | Battery level
     #chart
     #slider
