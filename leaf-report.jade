@@ -31,7 +31,7 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
             | {{desc}}
           div
             | {{estimate}}
-  script(src="leaf-meter.js")  
+  script(src="leaf-meter.js?v4")  
 
 polymer-element(name='leaf-polling', attributes="next_sample recent now_milli data_time")
   template
@@ -70,8 +70,8 @@ polymer-element(name='leaf-polling', attributes="next_sample recent now_milli da
       div
         | The latest report was fetched {{data_time}}, {{data_time | fromNow}}
   script(src='/lib/moment.min.js')
-  script(src='filters.js')      
-  script(src="leaf-polling.js")
+  script(src='filters.js?v4')      
+  script(src="leaf-polling.js?v4")
 
 polymer-element(name='leaf-predict', attributes='previous')
   template
@@ -81,7 +81,7 @@ polymer-element(name='leaf-predict', attributes='previous')
     #slider
   script(src="/lib/rickshaw/71877d994a/vendor/d3.v3.js")
   script(src="/lib/rickshaw/71877d994a/rickshaw.min.js")
-  script(src="leaf-predict.js")
+  script(src="leaf-predict.js?v4")
     
 polymer-element(name='leaf-report')
   template
@@ -128,7 +128,7 @@ polymer-element(name='leaf-report')
       | refresh button here that posts a request
   script(src='/lib/jquery-2.0.3.js')
   script(src='/lib/moment.min.js')
-  script(src='filters.js')
-  script(src='leaf-report.js')
+  script(src='filters.js?v4')
+  script(src='leaf-report.js?v4')
 
   // listen for leaf-report update signal, rerun refresh
