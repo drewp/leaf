@@ -82,7 +82,7 @@ dom-module(id='leaf-polling')
             div.label {{item.label}}
       div
         | The latest report was fetched {{data_time}}, {{data_time_from_now}}
-  script(src='/lib/moment.min.js')
+  script(src='/lib/moment-2.10.3.min.js')
   script(src="leaf-polling.js")
 
 dom-module(id='leaf-predict')
@@ -140,7 +140,7 @@ dom-module(id='leaf-report')
         div time_required_to_full_sec: {{fullFormat}}
         | refresh button here that posts a request
   script(src='/lib/jquery-2.0.3.js')
-  script(src='/lib/moment.min.js')
+  script(src='/lib/moment-2.10.3.min.js')
   script(src='leaf-report.js')
 
   // listen for leaf-report update signal, rerun refresh
