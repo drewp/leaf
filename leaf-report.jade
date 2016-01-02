@@ -19,7 +19,18 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
         display: inline-flex;
         flex-direction: column;
       }
-    div
+      div.charging {
+        background-image: -webkit-gradient(linear,  left top,  left bottom, 
+            color-stop(0.00, red), 
+            color-stop(16%, orange),
+            color-stop(32%, yellow),
+            color-stop(48%, green),
+            color-stop(60%, blue),
+            color-stop(76%, indigo),
+            color-stop(1.00, violet));
+        }
+      }
+    div(class="{{classes}}")
       div(style="flex: 0 0 auto")
         h1 Last reading
       div(style="flex: 1 0; display: flex;")
@@ -31,7 +42,7 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
             | {{desc}}
           div
             | {{estimate}}
-  script(src="leaf-meter.js?v4")  
+  script(src="leaf-meter.js?v5")  
 
 polymer-element(name='leaf-polling', attributes="next_sample recent now_milli data_time")
   template
