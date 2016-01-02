@@ -5,6 +5,7 @@ Polymer
     recent: {notify: true, observer: 'recentChanged'}
     now_milli: {notify: true, observer: 'now_milliChanged'}
     data_time: {notify: true}
+    data_time_from_now: {computed: '_data_time_from_now(data_time)'}
   ready: () ->
     @events = []
 
@@ -41,3 +42,6 @@ Polymer
     @events.push
       style: "left: " + xForTime(parseFloat(@now_milli)) + "px; border-left-style: dashed; border-color: red"
       label: "now"
+
+  _data_time_from_now: (data_time) ->
+    moment(data_time)?.fromNow()

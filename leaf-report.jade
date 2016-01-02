@@ -81,7 +81,7 @@ dom-module(id='leaf-polling')
           div.tick(style="{{item.style}}")
             div.label {{item.label}}
       div
-        | The latest report was fetched {{data_time}}, {{data_time | fromNow}}
+        | The latest report was fetched {{data_time}}, {{data_time_from_now}}
   script(src='/lib/moment.min.js')
   script(src='filters.js?v4')      
   script(src="leaf-polling.js?v4")
@@ -132,16 +132,15 @@ dom-module(id='leaf-report')
     section
       div
         | cruising_range_ac_off:
-        b {{latestRead.cruising_range_ac_off | meterToMile}}
-      div cruising_range_ac_on: {{latestRead.cruising_range_ac_on | meterToMile}}
+        b {{cruiseAcOffMiles}}
+      div cruising_range_ac_on: {{cruiseAcOnMiles}}
     section
       div
-        | time_required_to_full_L2_sec: {{latestRead.time_required_to_full_L2_sec | humanizeSec}}
-      div time_required_to_full_sec: {{latestRead.time_required_to_full_sec | humanizeSec}}
+        | time_required_to_full_L2_sec: {{fullL2Format}}
+      div time_required_to_full_sec: {{fullFormat}}
       | refresh button here that posts a request
   script(src='/lib/jquery-2.0.3.js')
   script(src='/lib/moment.min.js')
-  script(src='filters.js?v4')
   script(src='leaf-report.js?v4')
 
   // listen for leaf-report update signal, rerun refresh
