@@ -2,10 +2,16 @@ Polymer
   is: "leaf-predict"
   properties:
     previous: {notify: true, observer: 'previousChanged'}
+    layout: {value: "full", notify: true, observer: 'initGraph'}
   ready: () ->
+    #@initGraph()
+  initGraph: () ->
+    @$.chart.removeChild(c) for c in @$.chart.children
+    @$.slider.removeChild(c) for c in @$.slider.children
+
     @graph = new Rickshaw.Graph(
       element: @$.chart
-      width: 900
+      width: (if @layout == 'full' then 900 else 200)
       height: 200
       min: 0
       max: 12
@@ -34,11 +40,12 @@ Polymer
     
     yAxis = new Rickshaw.Graph.Axis.Y(graph: @graph)
     yAxis.render()
-    
-    slider = new Rickshaw.Graph.RangeSlider.Preview(
-      graph: @graph
-      element: @$.slider
-    )
+
+    if @layout == 'full'
+      slider = new Rickshaw.Graph.RangeSlider.Preview(
+        graph: @graph
+        element: @$.slider
+      )
 
     @graph.updateCallbacks.push(() => @patchStyle())
 

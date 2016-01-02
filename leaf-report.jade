@@ -35,7 +35,7 @@ dom-module(id='leaf-meter')
     div(class="{{classes}}")
       div(style="flex: 0 0 auto")
         h1 Last reading
-      div(style="flex: 1 0; display: flex;")
+      div(style="flex: 1 0; display: flex; flex-direction: column")
         div.steps(style="flex: 0 0 auto")
           template(is="dom-repeat" items="{{steps}}")
             div(class="{{item <= remain ? 'full' : 'empty'}}") 
@@ -118,26 +118,27 @@ dom-module(id='leaf-report')
         time_required_to_full_sec="{{latestRead.time_required_to_full_sec}}",
       )
     section
-      leaf-predict(previous="{{latestRead.previous}}")
-    section
-      leaf-polling#polling(
-            next_sample="{{latestRead.nextPollTime}}",
-            recent="{{latestRead.previous}}",
-            data_time="{{latestRead.data_time}}",
-            now_milli="1397949838708")
-    div
-      | 
-    div More from the latest report:
-    section
+      leaf-predict(previous="{{latestRead.previous}}", layout="{{layout}}")
+    template(is="dom-if", if="{{fullSections}}")
+      section
+        leaf-polling#polling(
+              next_sample="{{latestRead.nextPollTime}}",
+              recent="{{latestRead.previous}}",
+              data_time="{{latestRead.data_time}}",
+              now_milli="1397949838708")
       div
-        | cruising_range_ac_off:
-        b {{cruiseAcOffMiles}}
-      div cruising_range_ac_on: {{cruiseAcOnMiles}}
-    section
-      div
-        | time_required_to_full_L2_sec: {{fullL2Format}}
-      div time_required_to_full_sec: {{fullFormat}}
-      | refresh button here that posts a request
+        | 
+      div More from the latest report:
+      section
+        div
+          | cruising_range_ac_off:
+          b {{cruiseAcOffMiles}}
+        div cruising_range_ac_on: {{cruiseAcOnMiles}}
+      section
+        div
+          | time_required_to_full_L2_sec: {{fullL2Format}}
+        div time_required_to_full_sec: {{fullFormat}}
+        | refresh button here that posts a request
   script(src='/lib/jquery-2.0.3.js')
   script(src='/lib/moment.min.js')
   script(src='leaf-report.js')

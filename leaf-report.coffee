@@ -15,7 +15,9 @@ Polymer
     fullFormat: {computed: '_fullFormat(latestRead)'}
     cruiseAcOffMiles: {computed: '_cruiseAcOffMiles(latestRead)'}
     cruiseAcOnMiles: {computed: '_cruiseAcOnMiles(latestRead)'}
+    layout: {value: 'full'}
   ready: ->
+    @fullSections = @layout == 'full'
     refresh = =>
       $.getJSON "/leaf/latest", (d) =>
         @latestRead = d
@@ -23,7 +25,7 @@ Polymer
         @latestRead.battery_remaining_amount = parseFloat(@latestRead.battery_remaining_amount)
       return
     updateTime = () =>
-      @$.polling.now_milli = Date.now()
+      @$.polling.now_milli = Date.now() if @$.polling
     setInterval(updateTime, 30 * 1000)
     setInterval(refresh, 1000 * 60 * 10)
     updateTime()
