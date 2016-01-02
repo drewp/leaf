@@ -7,24 +7,23 @@ humanizeSec = (sec) ->
 meterToMile = (value) ->
   Math.round value * 0.000621371
 
-
 Polymer
   is: "leaf-report"
   properties:
     latestRead: {notify: true}
-    fullL2Format: {computed: _fullL2Format(latestRead)}
-    fullFormat: {computed: _fullFormat(latestRead)}
-    cruiseAcOffMiles: {computed: _cruiseAcOffMiles(latestRead)}
-    cruiseAcOnMiles: {computed: _cruiseAcOnMiles(latestRead)}
+    fullL2Format: {computed: '_fullL2Format(latestRead)'}
+    fullFormat: {computed: '_fullFormat(latestRead)'}
+    cruiseAcOffMiles: {computed: '_cruiseAcOffMiles(latestRead)'}
+    cruiseAcOnMiles: {computed: '_cruiseAcOnMiles(latestRead)'}
   ready: ->
-    self = this
-    refresh = ->
-      $.getJSON "/leaf/latest", (d) ->
-        self.latestRead = d
+    refresh = =>
+      $.getJSON "/leaf/latest", (d) =>
+        @latestRead = d
+        @latestRead.battery_capacity = parseFloat(@latestRead.battery_capacity)
+        @latestRead.battery_remaining_amount = parseFloat(@latestRead.battery_remaining_amount)
       return
-
-    updateTime = () ->
-      self.$.polling.now_milli = +new Date()
+    updateTime = () =>
+      @$.polling.now_milli = Date.now()
     setInterval(updateTime, 30 * 1000)
     setInterval(refresh, 1000 * 60 * 10)
     updateTime()

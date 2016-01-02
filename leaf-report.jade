@@ -75,7 +75,7 @@ dom-module(id='leaf-polling')
       }
     
     div(style="border: 1px solid black")
-      div Next sample in {{nextMin}} min
+      div Next sample in {{nextMin}} min.
       div#timeline
         template(is="dom-repeat", items="{{events}}")
           div.tick(style="{{item.style}}")
@@ -83,8 +83,7 @@ dom-module(id='leaf-polling')
       div
         | The latest report was fetched {{data_time}}, {{data_time_from_now}}
   script(src='/lib/moment.min.js')
-  script(src='filters.js?v4')      
-  script(src="leaf-polling.js?v4")
+  script(src="leaf-polling.js")
 
 dom-module(id='leaf-predict')
   template
@@ -94,7 +93,7 @@ dom-module(id='leaf-predict')
     #slider
   script(src="/lib/rickshaw/71877d994a/vendor/d3.v3.js")
   script(src="/lib/rickshaw/71877d994a/rickshaw.min.js")
-  script(src="leaf-predict.js?v4")
+  script(src="leaf-predict.js")
     
 dom-module(id='leaf-report')
   template
@@ -141,6 +140,6 @@ dom-module(id='leaf-report')
       | refresh button here that posts a request
   script(src='/lib/jquery-2.0.3.js')
   script(src='/lib/moment.min.js')
-  script(src='leaf-report.js?v4')
+  script(src='leaf-report.js')
 
   // listen for leaf-report update signal, rerun refresh

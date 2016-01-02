@@ -1,29 +1,27 @@
 Polymer
   is: "leaf-polling"
   properties:
-    next_sample: {notify: true, observer: 'next_sampleChanged'}
-    recent: {notify: true, observer: 'recentChanged'}
-    now_milli: {notify: true, observer: 'now_milliChanged'}
+    events: {notify: true, type: Array}
+    next_sample: {notify: true, type: Number, observer: 'now_milliChanged'}
+    recent: {notify: true, type: Array, observer: 'recentChanged'}
+    events: {notify: true, type: Array}
+    now_milli: {notify: true, type: Number, observer: 'now_milliChanged'}
     data_time: {notify: true}
     data_time_from_now: {computed: '_data_time_from_now(data_time)'}
   ready: () ->
     @events = []
-
-  next_sampleChanged: () ->
-    @now_milliChanged()
     
   now_milliChanged: () ->
     nextMilli = +new Date(@next_sample)
-    nextMin = (nextMilli - parseFloat(@now_milli)) / 1000 / 60
+    nextMin = (nextMilli - @now_milli) / 1000 / 60
     @nextMin = Math.round(nextMin * 10) / 10
     @recentChanged()
     
   recentChanged: () ->
     return if not @recent?
-    now = parseFloat(@now_milli)
     xForTime = d3.scale.linear().domain([
-      now - .25 * 86400 * 1000,
-      now + 30 * 60 * 1000]).range([0, this.$.timeline.clientWidth])
+      @now_milli - .25 * 86400 * 1000,
+      @now_milli + 30 * 60 * 1000]).range([0, @$.timeline.clientWidth])
 
     @events = []
     # this is missing the unsuccessful ones, which the server should provide
@@ -33,13 +31,12 @@ Polymer
       hhmm = t.toTimeString().replace(/(\d+:\d+):.*/, "$1")
       x = xForTime(+t)
       if x > 0
-        @events.push
+        @push 'events',
           style: "left: " + x + "px"
           label: hhmm + "\n" + label
-
     # also get the expected next times from the server and draw those
 
-    @events.push
+    @push 'events',
       style: "left: " + xForTime(parseFloat(@now_milli)) + "px; border-left-style: dashed; border-color: red"
       label: "now"
 
