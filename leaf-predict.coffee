@@ -39,6 +39,14 @@ Polymer
       graph: @graph
       element: @$.slider
     )
+
+    @graph.updateCallbacks.push(() => @patchStyle())
+
+  patchStyle: () ->
+    styleFix = document.createElement('style')
+    styleFix.innerText = '.domain { fill: none; stroke: none; }'
+    svgNode = @$.chart.firstChild
+    svgNode.insertBefore(styleFix, svgNode.firstChild)
     
   previousChanged: () ->
     pts = @previous
