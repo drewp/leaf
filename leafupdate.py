@@ -31,7 +31,8 @@ class Poller(object):
         c = Connection(self.config.value(self.car, NS['username']),
                        self.config.value(self.car, NS['password']))
         userService = UserService(c)
-        status = userService.login_and_get_status()
+        log.info('login_and_get_status')
+        status = userService.login_and_get_status(timeout=30)
         if not c.logged_in:
             raise ValueError('login failed')
 
@@ -41,6 +42,7 @@ class Poller(object):
         result['nickname'] = status.user_info.nickname
         v = VehicleService(c)
         requestTime = nowLocal() - datetime.timedelta(seconds=2)
+        log.info('request_status')
         v.request_status(result['vin'])
         tries = 0
         while True:
@@ -115,6 +117,7 @@ def lastPollTime(coll):
 
 dailyStartHour = 8
 dailyEndHour = 21 # this should be adjusted if we're charging late
+dailyEndHour = 24
 periodHours = 1. / 3
 def nextAfter(dt):
     dayStart = dt.replace(hour=0, minute=0, second=0, microsecond=0)
