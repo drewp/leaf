@@ -1,4 +1,7 @@
-Polymer "leaf-predict", {
+Polymer
+  is: "leaf-predict"
+  properties:
+    previous: {notify: true, observer: 'previousChanged'}
   ready: () ->
     @graph = new Rickshaw.Graph(
       element: @$.chart
@@ -42,4 +45,3 @@ Polymer "leaf-predict", {
     seriesData = ({x: +new Date(row[0]), y: parseFloat(row[1])} for row in pts)
     @graph.series[0].data = seriesData
     @graph.render()
-}

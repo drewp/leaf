@@ -1,4 +1,6 @@
-polymer-element(name='leaf-meter', attributes="battery_capacity battery_remaining_amount battery_charging_status plugin_state cruising_range_ac_off time_required_to_full_L2_sec time_required_to_full_sec")
+link(rel="import", href="/lib/polymer/1.0.9/polymer/polymer.html")
+
+dom-module(id='leaf-meter')
   template
     style.
       .steps > div {
@@ -35,16 +37,16 @@ polymer-element(name='leaf-meter', attributes="battery_capacity battery_remainin
         h1 Last reading
       div(style="flex: 1 0; display: flex;")
         div.steps(style="flex: 0 0 auto")
-          template(repeat="{{i in steps}}")
-            div(class="{{i <= remain ? 'full' : 'empty'}}") 
+          template(is="dom-repeat" items="{{steps}}")
+            div(class="{{item <= remain ? 'full' : 'empty'}}") 
         div(style="flex: 0 0 auto")
           div
             | {{desc}}
           div
             | {{estimate}}
-  script(src="leaf-meter.js?v5")  
+  script(src="leaf-meter.js")  
 
-polymer-element(name='leaf-polling', attributes="next_sample recent now_milli data_time")
+dom-module(id='leaf-polling')
   template
     style.
       #timeline {
@@ -75,16 +77,16 @@ polymer-element(name='leaf-polling', attributes="next_sample recent now_milli da
     div(style="border: 1px solid black")
       div Next sample in {{nextMin}} min
       div#timeline
-        template(repeat="{{ev in events}}")
-          div.tick(style="{{ev.style}}")
-            div.label {{ev.label}}
+        template(is="dom-repeat", items="{{events}}")
+          div.tick(style="{{item.style}}")
+            div.label {{item.label}}
       div
         | The latest report was fetched {{data_time}}, {{data_time | fromNow}}
   script(src='/lib/moment.min.js')
   script(src='filters.js?v4')      
   script(src="leaf-polling.js?v4")
 
-polymer-element(name='leaf-predict', attributes='previous')
+dom-module(id='leaf-predict')
   template
     link(rel="stylesheet", href="/lib/rickshaw/71877d994a/src/css/graph.css")
     | Battery level
@@ -94,7 +96,7 @@ polymer-element(name='leaf-predict', attributes='previous')
   script(src="/lib/rickshaw/71877d994a/rickshaw.min.js")
   script(src="leaf-predict.js?v4")
     
-polymer-element(name='leaf-report')
+dom-module(id='leaf-report')
   template
     style.
       @host { :scope {display: block;} }

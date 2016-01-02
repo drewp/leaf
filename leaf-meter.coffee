@@ -1,8 +1,15 @@
-Polymer "leaf-meter", {
-  observe: {
-    battery_capacity: 'refresh',
-    battery_remaining_amount: 'refresh'
-  },
+Polymer
+  is: "leaf-meter"
+  
+  properties:
+    battery_capacity: {notify: true, observer: 'refresh'}
+    battery_remaining_amount: {notify: true, observer: 'refresh'}
+    battery_charging_status: {notify: true}
+    plugin_state: {notify: true}
+    cruising_range_ac_off: {notify: true}
+    time_required_to_full_L2_sec: {notify: true}
+    time_required_to_full_sec: {notify: true}
+
   refresh: () ->
     @cap = parseInt(@battery_capacity)
     @remain = parseInt(@battery_remaining_amount)
@@ -25,4 +32,3 @@ Polymer "leaf-meter", {
         else
           @desc += "(unknown mode)"
     @estimate = "Est " + Math.round(@cruising_range_ac_off / 1609.34) + " mi"
-}

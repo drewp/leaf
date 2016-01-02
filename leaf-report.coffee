@@ -1,5 +1,5 @@
-
-Polymer "leaf-report",
+Polymer
+  is: "leaf-report"
   latestRead: {}
   ready: ->
     self = this

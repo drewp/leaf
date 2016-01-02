@@ -1,6 +1,11 @@
-Polymer "leaf-polling", {
+Polymer
+  is: "leaf-polling"
+  properties:
+    next_sample: {notify: true, observer: 'next_sampleChanged'}
+    recent: {notify: true, observer: 'recentChanged'}
+    now_milli: {notify: true, observer: 'now_milliChanged'}
+    data_time: {notify: true}
   ready: () ->
-    self = this
     @events = []
 
   next_sampleChanged: () ->
@@ -36,5 +41,3 @@ Polymer "leaf-polling", {
     @events.push
       style: "left: " + xForTime(parseFloat(@now_milli)) + "px; border-left-style: dashed; border-color: red"
       label: "now"
-
-}
