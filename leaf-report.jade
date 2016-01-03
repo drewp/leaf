@@ -108,13 +108,14 @@ dom-module(id='leaf-report')
         margin: 5px;
       }
     section
+      //- note case change on s/L2/l2/!
       leaf-meter(
         battery_capacity="{{latestRead.battery_capacity}}",
         battery_remaining_amount="{{latestRead.battery_remaining_amount}}",
         battery_charging_status="{{latestRead.battery_charging_status}}",
         plugin_state="{{latestRead.plugin_state}}",
         cruising_range_ac_off="{{latestRead.cruising_range_ac_off}}",
-        time_required_to_full_L2_sec="{{latestRead.time_required_to_full_L2_sec}}",
+        time_required_to_full_l2_sec="{{latestRead.time_required_to_full_L2_sec}}",
         time_required_to_full_sec="{{latestRead.time_required_to_full_sec}}",
       )
     section

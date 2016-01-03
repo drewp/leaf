@@ -7,7 +7,8 @@ Polymer
     battery_charging_status: {notify: true, observer: 'refresh'}
     plugin_state: {notify: true, observer: 'refresh'}
     cruising_range_ac_off: {notify: true, type: Number, observer: 'refresh'}
-    time_required_to_full_L2_sec: {notify: true, observer: 'refresh'}
+    # note: attribute arrives lowercase, not 'L2'
+    time_required_to_full_l2_sec: {notify: true, observer: 'refresh'}
     time_required_to_full_sec: {notify: true, observer: 'refresh'}
     steps: {notify: true, type: Array}
 
@@ -24,7 +25,7 @@ Polymer
         @classes = "plug-no-charge"
       else
         @desc = "charging at "
-        if @time_required_to_full_L2_sec
+        if @time_required_to_full_l2_sec
           @desc += "L2"
           @classes = "charging charging-l2"
         else if @time_required_to_full_sec
